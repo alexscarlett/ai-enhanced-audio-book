@@ -1,18 +1,22 @@
 /*
   ==============================================================================
 
-   This file is part of the JUCE examples.
-   Copyright (c) 2022 - Raw Material Software Limited
+   This file is part of the JUCE framework examples.
+   Copyright (c) Raw Material Software Limited
 
    The code included in this file is provided under the terms of the ISC license
    http://www.isc.org/downloads/software-support-policy/isc-license. Permission
-   To use, copy, modify, and/or distribute this software for any purpose with or
+   to use, copy, modify, and/or distribute this software for any purpose with or
    without fee is hereby granted provided that the above copyright notice and
    this permission notice appear in all copies.
 
-   THE SOFTWARE IS PROVIDED "AS IS" WITHOUT ANY WARRANTY, AND ALL WARRANTIES,
-   WHETHER EXPRESSED OR IMPLIED, INCLUDING MERCHANTABILITY AND FITNESS FOR
-   PURPOSE, ARE DISCLAIMED.
+   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+   REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+   AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+   INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+   LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+   OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+   PERFORMANCE OF THIS SOFTWARE.
 
   ==============================================================================
 */
@@ -120,9 +124,8 @@ namespace ID
 
 template <typename Func, typename... Items>
 constexpr void forEach (Func&& func, Items&&... items)
-    noexcept (noexcept (std::initializer_list<int> { (func (std::forward<Items> (items)), 0)... }))
 {
-    (void) std::initializer_list<int> { ((void) func (std::forward<Items> (items)), 0)... };
+    (func (std::forward<Items> (items)), ...);
 }
 
 template <typename... Components>
@@ -144,15 +147,15 @@ void resetAll (Processors&... processors)
 }
 
 //==============================================================================
-class DspModulePluginDemo  : public AudioProcessor,
-                             private ValueTree::Listener
+class DspModulePluginDemo : public AudioProcessor,
+                            private ValueTree::Listener
 {
 public:
     DspModulePluginDemo()
         : DspModulePluginDemo (AudioProcessorValueTreeState::ParameterLayout{}) {}
 
     //==============================================================================
-    void prepareToPlay (double sampleRate, int samplesPerBlock) override
+    void prepareToPlay (double sampleRate, int samplesPerBlock) final
     {
         const auto channels = jmax (getTotalNumInputChannels(), getTotalNumOutputChannels());
 
@@ -164,15 +167,15 @@ public:
         reset();
     }
 
-    void reset() override
+    void reset() final
     {
         chain.reset();
         update();
     }
 
-    void releaseResources() override {}
+    void releaseResources() final {}
 
-    void processBlock (AudioBuffer<float>& buffer, MidiBuffer&) override
+    void processBlock (AudioBuffer<float>& buffer, MidiBuffer&) final
     {
         if (jmax (getTotalNumInputChannels(), getTotalNumOutputChannels()) == 0)
             return;
@@ -196,43 +199,43 @@ public:
         chain.process (dsp::ProcessContextReplacing<float> (inoutBlock));
     }
 
-    void processBlock (AudioBuffer<double>&, MidiBuffer&) override {}
+    void processBlock (AudioBuffer<double>&, MidiBuffer&) final {}
 
     //==============================================================================
     AudioProcessorEditor* createEditor() override { return nullptr; }
     bool hasEditor() const override { return false; }
 
     //==============================================================================
-    const String getName() const override { return "DSPModulePluginDemo"; }
+    const String getName() const final { return "DSPModulePluginDemo"; }
 
-    bool acceptsMidi()  const override { return false; }
-    bool producesMidi() const override { return false; }
-    bool isMidiEffect() const override { return false; }
+    bool acceptsMidi()  const final { return false; }
+    bool producesMidi() const final { return false; }
+    bool isMidiEffect() const final { return false; }
 
-    double getTailLengthSeconds() const override { return 0.0; }
-
-    //==============================================================================
-    int getNumPrograms()    override { return 1; }
-    int getCurrentProgram() override { return 0; }
-    void setCurrentProgram (int) override {}
-    const String getProgramName (int) override { return "None"; }
-
-    void changeProgramName (int, const String&) override {}
+    double getTailLengthSeconds() const final { return 0.0; }
 
     //==============================================================================
-    bool isBusesLayoutSupported (const BusesLayout& layout) const override
+    int getNumPrograms()    final { return 1; }
+    int getCurrentProgram() final { return 0; }
+    void setCurrentProgram (int) final {}
+    const String getProgramName (int) final { return "None"; }
+
+    void changeProgramName (int, const String&) final {}
+
+    //==============================================================================
+    bool isBusesLayoutSupported (const BusesLayout& layout) const final
     {
         return layout == BusesLayout { { AudioChannelSet::stereo() },
                                        { AudioChannelSet::stereo() } };
     }
 
     //==============================================================================
-    void getStateInformation (MemoryBlock& destData) override
+    void getStateInformation (MemoryBlock& destData) final
     {
         copyXmlToBinary (*apvts.copyState().createXml(), destData);
     }
 
-    void setStateInformation (const void* data, int sizeInBytes) override
+    void setStateInformation (const void* data, int sizeInBytes) final
     {
         apvts.replaceState (ValueTree::fromXml (*getXmlFromBinary (data, sizeInBytes)));
     }
@@ -812,7 +815,7 @@ private:
     }
 
     //==============================================================================
-    void valueTreePropertyChanged (ValueTree&, const Identifier&) override
+    void valueTreePropertyChanged (ValueTree&, const Identifier&) final
     {
         requiresUpdate.store (true);
     }
@@ -970,7 +973,7 @@ private:
     //==============================================================================
     static String getPanningTextForValue (float value)
     {
-        if (value == 0.5f)
+        if (approximatelyEqual (value, 0.5f))
             return "center";
 
         if (value < 0.5f)
@@ -1499,7 +1502,7 @@ private:
 };
 
 //==============================================================================
-class DspModulePluginDemoEditor  : public AudioProcessorEditor
+class DspModulePluginDemoEditor final : public AudioProcessorEditor
 {
 public:
     explicit DspModulePluginDemoEditor (DspModulePluginDemo& p)
@@ -1579,10 +1582,10 @@ public:
         g.fillRect (rectChoice);
 
         g.setColour (Colours::white);
-        g.setFont (Font (20.0f).italicised().withExtraKerningFactor (0.1f));
+        g.setFont (Font (FontOptions (20.0f)).italicised().withExtraKerningFactor (0.1f));
         g.drawFittedText ("DSP MODULE DEMO", rectTop.reduced (10, 0), Justification::centredLeft, 1);
 
-        g.setFont (Font (14.0f));
+        g.setFont (FontOptions (14.0f));
         String strText = "IR length (reverb): " + String (proc.getCurrentIRSize()) + " samples";
         g.drawFittedText (strText, rectBottom.reduced (10, 0), Justification::centredRight, 1);
     }
@@ -1617,6 +1620,15 @@ public:
                  ladderControls);
     }
 
+    /*  Called by VST3 and AAX hosts to determine which parameter is under the mouse. */
+    int getControlParameterIndex (Component& comp) override
+    {
+        if (auto* parent = findParentComponentWithParamMenu (&comp))
+            return parent->getParameterIndex();
+
+        return -1;
+    }
+
 private:
     class ComponentWithParamMenu : public Component
     {
@@ -1633,12 +1645,28 @@ private:
                                                                                               .withMousePosition());
         }
 
+        int getParameterIndex() const
+        {
+            return param.getParameterIndex();
+        }
+
     private:
         AudioProcessorEditor& editor;
         RangedAudioParameter& param;
     };
 
-    class AttachedSlider  : public ComponentWithParamMenu
+    static ComponentWithParamMenu* findParentComponentWithParamMenu (Component* c)
+    {
+        if (c == nullptr)
+            return nullptr;
+
+        if (auto* derived = dynamic_cast<ComponentWithParamMenu*> (c))
+            return derived;
+
+        return findParentComponentWithParamMenu (c->getParentComponent());
+    }
+
+    class AttachedSlider final : public ComponentWithParamMenu
     {
     public:
         AttachedSlider (AudioProcessorEditor& editorIn, RangedAudioParameter& paramIn)
@@ -1664,7 +1692,7 @@ private:
         SliderParameterAttachment attachment;
     };
 
-    class AttachedToggle  : public ComponentWithParamMenu
+    class AttachedToggle final : public ComponentWithParamMenu
     {
     public:
         AttachedToggle (AudioProcessorEditor& editorIn, RangedAudioParameter& paramIn)
@@ -1683,7 +1711,7 @@ private:
         ButtonParameterAttachment attachment;
     };
 
-    class AttachedCombo  : public ComponentWithParamMenu
+    class AttachedCombo final : public ComponentWithParamMenu
     {
     public:
         AttachedCombo (AudioProcessorEditor& editorIn, RangedAudioParameter& paramIn)
@@ -1706,7 +1734,7 @@ private:
         }
 
     private:
-        struct ComboWithItems : public ComboBox
+        struct ComboWithItems final : public ComboBox
         {
             explicit ComboWithItems (RangedAudioParameter& param)
             {
@@ -1796,7 +1824,7 @@ private:
         grid.performLayout (bounds);
     }
 
-    struct BasicControls : public Component
+    struct BasicControls final : public Component
     {
         explicit BasicControls (AudioProcessorEditor& editor,
                                 const DspModulePluginDemo::ParameterReferences::MainGroup& state)
@@ -1815,7 +1843,7 @@ private:
         AttachedSlider pan, input, output;
     };
 
-    struct DistortionControls : public Component
+    struct DistortionControls final : public Component
     {
         explicit DistortionControls (AudioProcessorEditor& editor,
                                      const DspModulePluginDemo::ParameterReferences::DistortionGroup& state)
@@ -1841,7 +1869,7 @@ private:
         AttachedCombo type, oversampling;
     };
 
-    struct ConvolutionControls : public Component
+    struct ConvolutionControls final : public Component
     {
         explicit ConvolutionControls (AudioProcessorEditor& editor,
                                       const DspModulePluginDemo::ParameterReferences::ConvolutionGroup& state)
@@ -1861,7 +1889,7 @@ private:
         AttachedSlider mix;
     };
 
-    struct MultiBandControls : public Component
+    struct MultiBandControls final : public Component
     {
         explicit MultiBandControls (AudioProcessorEditor& editor,
                                     const DspModulePluginDemo::ParameterReferences::MultiBandGroup& state)
@@ -1882,7 +1910,7 @@ private:
         AttachedSlider low, high, lRFreq;
     };
 
-    struct CompressorControls : public Component
+    struct CompressorControls final : public Component
     {
         explicit CompressorControls (AudioProcessorEditor& editor,
                                      const DspModulePluginDemo::ParameterReferences::CompressorGroup& state)
@@ -1904,7 +1932,7 @@ private:
         AttachedSlider threshold, ratio, attack, release;
     };
 
-    struct NoiseGateControls : public Component
+    struct NoiseGateControls final : public Component
     {
         explicit NoiseGateControls (AudioProcessorEditor& editor,
                                     const DspModulePluginDemo::ParameterReferences::NoiseGateGroup& state)
@@ -1926,7 +1954,7 @@ private:
         AttachedSlider threshold, ratio, attack, release;
     };
 
-    struct LimiterControls : public Component
+    struct LimiterControls final : public Component
     {
         explicit LimiterControls (AudioProcessorEditor& editor,
                                   const DspModulePluginDemo::ParameterReferences::LimiterGroup& state)
@@ -1946,7 +1974,7 @@ private:
         AttachedSlider threshold, release;
     };
 
-    struct DirectDelayControls : public Component
+    struct DirectDelayControls final : public Component
     {
         explicit DirectDelayControls (AudioProcessorEditor& editor,
                                       const DspModulePluginDemo::ParameterReferences::DirectDelayGroup& state)
@@ -1969,7 +1997,7 @@ private:
         AttachedSlider delay, smooth, mix;
     };
 
-    struct DelayEffectControls : public Component
+    struct DelayEffectControls final : public Component
     {
         explicit DelayEffectControls (AudioProcessorEditor& editor,
                                       const DspModulePluginDemo::ParameterReferences::DelayEffectGroup& state)
@@ -1994,7 +2022,7 @@ private:
         AttachedSlider value, smooth, lowpass, feedback, mix;
     };
 
-    struct PhaserControls : public Component
+    struct PhaserControls final : public Component
     {
         explicit PhaserControls (AudioProcessorEditor& editor,
                                  const DspModulePluginDemo::ParameterReferences::PhaserGroup& state)
@@ -2017,7 +2045,7 @@ private:
         AttachedSlider rate, depth, centre, feedback, mix;
     };
 
-    struct ChorusControls : public Component
+    struct ChorusControls final : public Component
     {
         explicit ChorusControls (AudioProcessorEditor& editor,
                                  const DspModulePluginDemo::ParameterReferences::ChorusGroup& state)
@@ -2040,7 +2068,7 @@ private:
         AttachedSlider rate, depth, centre, feedback, mix;
     };
 
-    struct LadderControls : public Component
+    struct LadderControls final : public Component
     {
         explicit LadderControls (AudioProcessorEditor& editor,
                                  const DspModulePluginDemo::ParameterReferences::LadderGroup& state)
@@ -2089,7 +2117,7 @@ private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DspModulePluginDemoEditor)
 };
 
-struct DspModulePluginDemoAudioProcessor  : public DspModulePluginDemo
+struct DspModulePluginDemoAudioProcessor final : public DspModulePluginDemo
 {
     AudioProcessorEditor* createEditor() override
     {
