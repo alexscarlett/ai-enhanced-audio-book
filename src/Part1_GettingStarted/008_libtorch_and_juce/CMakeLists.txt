@@ -6,7 +6,7 @@ project(JUCE_PLUGIN_WITH_TORCH VERSION 0.0.1)
 ### some libtorch stuff
 # https://forum.juce.com/t/using-libtorch-with-juce/41154/4
 # list(APPEND CMAKE_PREFIX_PATH "<my_path_to>/libtorch-win-shared-with-deps-debug-1.12.0+cpu/libtorch")
-set(CMAKE_PREFIX_PATH "~/src/sw/libtorch-250/") # location of libtorch
+set(CMAKE_PREFIX_PATH "../../../../pytorch-install") # location of libtorch
 #set(CMAKE_PREFIX_PATH "C:/Users/matthewyk/src/sw/libtorch/")
 
 find_package(Torch REQUIRED)
@@ -20,15 +20,15 @@ juce_add_plugin(JucePluginWithTorch
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
-    COMPANY_NAME Yeeking                          # Specify the name of the plugin's author
+    COMPANY_NAME Alex Scarlett                          # Specify the name of the plugin's author
     # IS_SYNTH TRUE/FALSE                       # Is this a synth or an effect?
     # NEEDS_MIDI_INPUT TRUE/FALSE               # Does the plugin need midi input?
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
     # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
     # EDITOR_WANTS_KEYBOARD_FOCUS TRUE/FALSE    # Does the editor need keyboard focus?
     COPY_PLUGIN_AFTER_BUILD TRUE        # Should the plugin be installed to a default location after building?
-    PLUGIN_MANUFACTURER_CODE YeeK               # A four-character manufacturer id with at least one upper-case character
-    PLUGIN_CODE Dem0                            # A unique four-character plugin id with exactly one upper-case character
+    PLUGIN_MANUFACTURER_CODE SCAR               # A four-character manufacturer id with at least one upper-case character
+    PLUGIN_CODE SCAR-DEMO-1                            # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
     FORMATS AU VST3 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
     PRODUCT_NAME "Juce Plugin With Torch")        # The name of the final executable, which can differ from the target name
