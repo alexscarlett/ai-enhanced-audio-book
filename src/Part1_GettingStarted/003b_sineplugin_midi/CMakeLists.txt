@@ -23,7 +23,7 @@ project(sine_plugin_midi VERSION 0.0.1)
 
 # find_package(JUCE CONFIG REQUIRED)        # If you've installed JUCE to your system
 # or
-add_subdirectory(../JUCE ./JUCE)                    # If you've put JUCE in a subdirectory called JUCE
+add_subdirectory(../../JUCE ./JUCE)                    # If you've put JUCE in a subdirectory called JUCE
 
 # If you are building a VST2 or AAX plugin, CMake needs to be told where to find these SDKs on your
 # system. This setup should be done before calling `juce_add_plugin`.
@@ -43,7 +43,7 @@ juce_add_plugin(sine_plugin_midi
     # ICON_SMALL ...
     COMPANY_NAME Yee-King                          # Specify the name of the plugin's author
     IS_SYNTH TRUE                       # Is this a synth or an effect?
-    NEEDS_MIDI_INPUT TRUE               # Does the plugin need midi input?
+    NEEDS_MIDI_INPUT TRUE               # set midi input enabled here
     # NEEDS_MIDI_OUTPUT TRUE/FALSE              # Does the plugin need midi output?
     # IS_MIDI_EFFECT TRUE/FALSE                 # Is this plugin a MIDI effect?
     NEEDS_MIDI_OUTPUT TRUE
