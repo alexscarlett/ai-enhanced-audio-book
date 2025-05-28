@@ -13,28 +13,27 @@
 
 //==============================================================================
 /**
-*/
-class TestPluginAudioProcessorEditor  : 
-public juce::AudioProcessorEditor, 
-  public Slider::Listener
+ */
+class TestPluginAudioProcessorEditor : public juce::AudioProcessorEditor,
+                                       public Slider::Listener
 {
 public:
-    TestPluginAudioProcessorEditor (TestPluginAudioProcessor&);
-    ~TestPluginAudioProcessorEditor() override;
+  TestPluginAudioProcessorEditor(TestPluginAudioProcessor &);
+  ~TestPluginAudioProcessorEditor() override;
 
-    //==============================================================================
-    void paint (juce::Graphics&) override;
-    void resized() override;
+  //==============================================================================
+  void paint(juce::Graphics &) override;
+  void resized() override;
 
-    void sliderValueChanged (Slider *slider);
-
+  void sliderValueChanged(Slider *slider);
 
 private:
-    juce::Slider freqControl;
+  juce::Slider freqControl;
+  juce::Slider decayControl;
 
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
-    TestPluginAudioProcessor& audioProcessor;
+  // This reference is provided as a quick way for your editor to
+  // access the processor object that created it.
+  TestPluginAudioProcessor &audioProcessor;
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (TestPluginAudioProcessorEditor)
+  JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(TestPluginAudioProcessorEditor)
 };

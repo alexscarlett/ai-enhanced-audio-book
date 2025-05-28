@@ -29,6 +29,7 @@
 #  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, ARE DISCLAIMED.
 #
 # ==============================================================================
+cmake_minimum_required(VERSION 4.0)
 
 juce_add_gui_app(AudioPluginHost
     BUNDLE_ID                       com.juce.pluginhost
