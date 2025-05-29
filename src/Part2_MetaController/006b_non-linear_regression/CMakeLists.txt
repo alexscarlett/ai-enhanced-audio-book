@@ -1,19 +1,23 @@
-cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 4.0 FATAL_ERROR)
 project(non-linear_regression)
 
 # update to point at your libtorch install
-set(CMAKE_PREFIX_PATH "../../src_resources/libtorch/libtorch")
+set(CMAKE_PREFIX_PATH "../../../../pytorch-install") # location of libtorch
 
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
-add_executable(linear_regressor src/main_linear.cpp)
-target_link_libraries(linear_regressor "${TORCH_LIBRARIES}")
-set_property(TARGET linear_regressor PROPERTY)
+# add_executable(linear_regressor src/main_linear.cpp)
+# target_link_libraries(linear_regressor "${TORCH_LIBRARIES}")
+# set_property(TARGET linear_regressor PROPERTY)
 
-add_executable(non-linear_regressor src/main_nonlinear.cpp)
-target_link_libraries(non-linear_regressor "${TORCH_LIBRARIES}")
-set_property(TARGET non-linear_regressor PROPERTY CXX_STANDARD 17)
+# add_executable(non-linear_regressor src/main_nonlinear.cpp)
+# target_link_libraries(non-linear_regressor "${TORCH_LIBRARIES}")
+# set_property(TARGET non-linear_regressor PROPERTY CXX_STANDARD 17)
+
+add_executable(linear_regressor src/main.cpp)
+target_link_libraries(linear_regressor "${TORCH_LIBRARIES}")
+set_property(TARGET linear_regressor PROPERTY CXX_STANDARD 17)
 
 
 # The following code block is suggested to be used on Windows.
