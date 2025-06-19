@@ -1,18 +1,18 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(plugin-host VERSION 0.0.1)
+project(meta-controller VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 17)
 
-#set(CMAKE_PREFIX_PATH "C:\\Users\\matthewyk\\src\\sw\\libtorch")
-set(CMAKE_PREFIX_PATH "~/src/sw/libtorch") # location of libtorch
+
+set(CMAKE_PREFIX_PATH "../../../../pytorch-install") # location of libtorch
 find_package(Torch REQUIRED)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
 
 
 add_subdirectory(../../JUCE ./JUCE)                    # If you've put JUCE in a subdirectory called JUCE
 
-juce_add_plugin(plugin-host
+juce_add_plugin(meta-controller
     # VERSION ...                               # Set this if the plugin version is different to the project version
     # ICON_BIG ...                              # ICON_* arguments specify a path to an image file to use as an icon for the Standalone
     # ICON_SMALL ...
@@ -28,11 +28,11 @@ juce_add_plugin(plugin-host
     PLUGIN_CODE dbc1                            # A unique four-character plugin id with exactly one upper-case character
                                                 # GarageBand 10.3 requires the first letter to be upper-case, and the remaining letters to be lower-case
     FORMATS AU VST3 Standalone                  # The formats to build. Other valid formats are: AAX Unity VST AU AUv3
-    PRODUCT_NAME "plugin-host")        # The name of the final executable, which can differ from the target name
+    PRODUCT_NAME "meta-controller")        # The name of the final executable, which can differ from the target name
 
-juce_generate_juce_header(plugin-host)
+juce_generate_juce_header(meta-controller)
 
-target_sources(plugin-host
+target_sources(meta-controller
     PRIVATE
     src/PluginEditor.cpp
     src/PluginProcessor.cpp
@@ -40,7 +40,7 @@ target_sources(plugin-host
     src/NeuralNetwork.cpp)
 
 
-target_compile_definitions(plugin-host
+target_compile_definitions(meta-controller
     PUBLIC # 
         JUCE_ALSA=1
         JUCE_DIRECTSOUND=1
@@ -57,7 +57,7 @@ target_compile_definitions(plugin-host
 
 
 
-target_link_libraries(plugin-host
+target_link_libraries(meta-controller
     PRIVATE
         juce::juce_audio_utils
         "${TORCH_LIBRARIES}"
@@ -72,11 +72,11 @@ target_link_libraries(plugin-host
 # the DLLs need to be copied to avoid memory errors.
 if (MSVC)
   file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-  add_custom_command(TARGET plugin-host_Standalone   
+  add_custom_command(TARGET meta-controller_Standalone   
                      POST_BUILD
                      COMMAND ${CMAKE_COMMAND} -E copy_if_different
                      ${TORCH_DLLS}
-                     $<TARGET_FILE_DIR:plugin-host_Standalone>)
+                     $<TARGET_FILE_DIR:meta-controller_Standalone>)
 endif (MSVC)
 
 

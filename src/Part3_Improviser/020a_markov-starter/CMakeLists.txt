@@ -10,7 +10,9 @@ add_library(markov-lib ../MarkovModelCPP/src/MarkovManager.cpp
 
 # add a new target for quickly experimenting with the Markov 
 add_executable(markov-starter src/main.cpp)
+add_executable(textPredictor src/textPredictor.cpp)
 
 # link the markov lib to the experiments executable
 target_link_libraries(markov-starter  markov-lib)
+target_link_libraries(textPredictor  markov-lib)
 
