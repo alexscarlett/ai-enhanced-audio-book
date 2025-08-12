@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "MyLogger.h"
 
 //==============================================================================
 MidiMarkovProcessor::MidiMarkovProcessor()
@@ -101,6 +102,9 @@ void MidiMarkovProcessor::changeProgramName(int index, const juce::String &newNa
 //==============================================================================
 void MidiMarkovProcessor::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
+  // Now DBG() will log to file too
+  DBG("prepareToPlay");
+  juce::Logger::writeToLog("prepareToPlay");
 }
 
 void MidiMarkovProcessor::releaseResources()
@@ -123,7 +127,7 @@ bool MidiMarkovProcessor::isBusesLayoutSupported(const BusesLayout &layouts) con
   if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono() && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
     return false;
 
-    // This checks if the input layout matches the output layout
+  // This checks if the input layout matches the output layout
 #if !JucePlugin_IsSynth
   if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
     return false;
@@ -147,6 +151,8 @@ void MidiMarkovProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::M
     midiMessages.addEvents(midiToProcess, midiToProcess.getFirstEventTime(), midiToProcess.getLastEventTime() + 1, 0);
     midiToProcess.clear();
   }
+
+  // Add actual midi messages sent from DAW (as opposed to mesgs sent from keyboard GUI)
   for (const auto metadata : midiMessages)
   {
     auto message = metadata.getMessage();
@@ -169,7 +175,7 @@ void MidiMarkovProcessor::processBlock(juce::AudioBuffer<float> &buffer, juce::M
     generatedMessages.addEvent(nOn, 0);
     noteOffTimes[note] = elapsedSamples + getSampleRate();
   }
-  // add note offs 
+  // add note offs
   for (auto i = 0; i < 127; ++i)
   {
     if (noteOffTimes[i] > 0 &&
